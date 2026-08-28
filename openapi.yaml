@@ -1,0 +1,259 @@
+openapi: 3.0.0
+info:
+  title: Conference Room Booking API
+  version: "1.0"
+  description: >
+    API для управління конференц-залами, бронюваннями та аналітикою.
+    Дозволяє додавати, редагувати, видаляти зали, шукати доступні зали,
+    бронювати їх та отримувати бізнес-звіти.
+servers:
+  - url: http://localhost:8000
+
+paths:
+  /rooms:
+    post:
+      summary: Додати конференц-зал
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoomCreate'
+      responses:
+        "200":
+          description: Зал успішно створено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConferenceRoom'
+
+  /rooms/{room_id}:
+    put:
+      summary: Оновити інформацію про зал
+      parameters:
+        - name: room_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoomUpdate'
+      responses:
+        "200":
+          description: Зал успішно оновлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConferenceRoom'
+    delete:
+      summary: Видалити конференц-зал
+      parameters:
+        - name: room_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Зал видалено
+
+  /rooms/search:
+    get:
+      summary: Пошук доступних залів
+      parameters:
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: start_time
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: end_time
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: capacity
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Список доступних залів
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ConferenceRoom'
+
+  /bookings:
+    post:
+      summary: Забронювати зал
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingCreate'
+      responses:
+        "200":
+          description: Бронювання успішне
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+
+  /reports/popular-rooms:
+    get:
+      summary: Звіт — популярні зали
+      responses:
+        "200":
+          description: Список залів з кількістю бронювань
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    room_id:
+                      type: integer
+                    bookings:
+                      type: integer
+
+  /reports/popular-services:
+    get:
+      summary: Звіт — популярні послуги
+      responses:
+        "200":
+          description: Список послуг з кількістю замовлень
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    service:
+                      type: string
+                    count:
+                      type: integer
+
+  /reports/monthly-revenue:
+    get:
+      summary: Звіт — дохід по місяцях
+      responses:
+        "200":
+          description: Дохід по місяцях
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    month:
+                      type: string
+                    revenue:
+                      type: number
+
+components:
+  schemas:
+    Service:
+      type: object
+      properties:
+        name:
+          type: string
+        price:
+          type: number
+
+    ConferenceRoom:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        capacity:
+          type: integer
+        base_price:
+          type: number
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/Service'
+
+    RoomCreate:
+      type: object
+      properties:
+        name:
+          type: string
+        capacity:
+          type: integer
+        base_price:
+          type: number
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/Service'
+
+    RoomUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        capacity:
+          type: integer
+        base_price:
+          type: number
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/Service'
+
+    BookingCreate:
+      type: object
+      properties:
+        room_id:
+          type: integer
+        date:
+          type: string
+        start_time:
+          type: string
+        end_time:
+          type: string
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/Service'
+
+    Booking:
+      type: object
+      properties:
+        id:
+          type: integer
+        room_id:
+          type: integer
+        date:
+          type: string
+        start_time:
+          type: string
+        end_time:
+          type: string
+        duration:
+          type: integer
+        total_price:
+          type: number
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/Service'

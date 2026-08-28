@@ -45,38 +45,53 @@ API для управління конференц-залами, бронюва�
 4.1. Клонування репозиторію
 
 bash
+
 git clone https://github.com/yourusername/conference_booking_api.git
+
 cd conference_booking_api
 
 4.2. Створення віртуального середовища
 
 bash
+
 python -m venv venv
+
 source venv/bin/activate   # Linux/Mac
+
 venv\Scripts\activate      # Windows
 
 4.3. Встановлення залежностей
 
 bash
+
 pip install -r requirements.txt
+
 У requirements.txt повинно бути:
 
 Код
+
 fastapi
+
 uvicorn
+
 pydantic
 
 4.4. Запуск сервера
 
 bash
+
 uvicorn main:app --reload
+
 API буде доступне за адресою:
 
 Код
+
 http://127.0.0.1:8000
+
 Swagger UI:
 
 Код
+
 http://127.0.0.1:8000/docs
 
 5. Приклади запитів
@@ -84,45 +99,72 @@ http://127.0.0.1:8000/docs
 5.1 Додати зал
 
 json
+
 POST /rooms
+
 {
+
   "name": "Зал А",
+  
   "capacity": 50,
+  
   "base_price": 2000,
+  
   "services": [{"name":"Проєктор","price":500}]
+  
 }
 
 5.2 Забронювати зал
 
 json
+
 POST /bookings
+
 {
+
   "room_id": 1,
+  
   "date": "2024-09-01",
+  
   "start_time": "10:00",
+  
   "end_time": "14:00",
+  
   "services": [{"name":"Wi-Fi","price":300}]
+  
 }
 
 5.3 Звіти
 
 json
+
 GET /reports/popular-rooms
+
 [
+
   {"room_id": 1, "bookings": 5},
+  
   {"room_id": 2, "bookings": 3}
+  
 ]
 
 GET /reports/popular-services
+
 [
   {"service": "Wi-Fi", "count": 4},
+  
   {"service": "Проєктор", "count": 2}
+  
 ]
 
 GET /reports/monthly-revenue
+
 [
+
   {"month": "2024-09", "revenue": 15000},
+  
   {"month": "2024-10", "revenue": 22000}
+  
 ]
 
 6. Аналітика
